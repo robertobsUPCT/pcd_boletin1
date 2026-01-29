@@ -42,7 +42,8 @@ def movimientos_no_ganador():
     return {2: [2, 3]}
 @pytest.fixture
 def movimientos_ganador():
-    return {2: [1, 2, 3]}
+    # Esto representa una columna: (0,1), (1,1), (2,1)
+    return {0: [1], 1: [1], 2: [1]}
 
 def test_no_ganador(movimientos_no_ganador):
     assert not jugada_ganadora(movimientos_no_ganador)
@@ -83,12 +84,34 @@ def test_movimiento_incorrecto(tablero_dimension, movimientos_ocupados):
 def test_ganador(movimientos_ganador):
     assert jugada_ganadora(movimientos_ganador)
 
-def jugada_ganadora(movimientos_jugador):
- #Comprobamos si hay 3 fichas en una fila
+def jugada_ganadora(movimientos_jugador, n=3):
+    # 1. Comprobar FILAS
     for fila in movimientos_jugador:
-        movimientos_columna = movimientos_jugador[fila]
-        if len(movimientos_columna)==3:
+        if len(movimientos_jugador[fila]) == n:
             return True
+
+    # Creamos una lista de todos los puntos (x, y) para facilitar el chequeo
+    puntos = []
+    for x, columnas in movimientos_jugador.items():
+        for y in columnas:
+            puntos.append((x, y))
+
+    # 2. Comprobar COLUMNAS
+    for j in range(n):
+        columna = [p for p in puntos if p[1] == j]
+        if len(columna) == n:
+            return True
+
+    # 3. Comprobar DIAGONAL PRINCIPAL (0,0), (1,1), (2,2)...
+    diagonal_primaria = [p for p in puntos if p[0] == p[1]]
+    if len(diagonal_primaria) == n:
+        return True
+
+    # 4. Comprobar DIAGONAL SECUNDARIA (0,2), (1,1), (2,0)...
+    diagonal_secundaria = [p for p in puntos if p[0] + p[1] == n - 1]
+    if len(diagonal_secundaria) == n:
+        return True
+
     return False
 
 if __name__ == "__main__":
