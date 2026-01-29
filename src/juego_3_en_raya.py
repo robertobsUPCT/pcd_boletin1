@@ -41,6 +41,7 @@ def movimientos_no_ganador():
 @pytest.fixture
 def movimientos_ganador():
     return {2: [1, 2, 3]}
+
 def test_no_ganador(movimientos_no_ganador):
     assert not jugada_ganadora(movimientos_no_ganador)
 
